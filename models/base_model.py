@@ -9,13 +9,22 @@ class BaseModel:
     A basemodel for common attributes and methods
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+
         """
         Initiliser for BaseModel class
         """
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.utcnow()
-        self.updated_at = self.created_at
+        if kwargs:
+            for key, value in kwargs.items():
+                if key != '__class__':
+                    setattr(self, key, value)
+                    if key in ('created_at', 'updated_at'):
+                        datetime_format = "%Y-%m-%dT%H:%M:%S.%f"
+                        self.__dict__[key] =
+                        datetime.strptime(value, datetime_format)
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.utcnow()
 
     def __str__(self):
         """
@@ -38,5 +47,5 @@ class BaseModel:
         my_dict["__class__"] = self.__class__.__name__
         for key, value in my_dict.items():
             if isinstance(value, datetime):
-                my_dict[key] = value.isoformat
+                my_dict[key] = value.isoformat()
         return my_dict
