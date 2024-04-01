@@ -15,8 +15,14 @@ class FileStorage:
         """
         Returns a dictionary of all stored objects
         """
-        return self.__objects
+        return all.objects
 
+        user_dict = {}
+        for key, obj in self_objects.items():
+            if isinstance(obj, User):
+                user_dict[key] = obj.__dict__
+
+        return {user_dict}
     def new(self, obj):
         """
         adds objects to the storage/sets in  objects
