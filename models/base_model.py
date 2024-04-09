@@ -1,55 +1,54 @@
-#!usr/bin/python3
-"""This is  a module for defining the BaseModel for the airBnB Clone"""
-import uuid
+#!/usr/bin/python3
+""" BaseModel class """
+import models
 from datetime import datetime
-from models import storage
+from uuid import uuid4
 
 
 class BaseModel:
     """
-    A basemodel for common attributes and methods
+    Represents the BaseModel class of the HBnB project
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        Constructor method\
+        that initializes the new BaseModel
+        """
+        self.id = str(uuid4())
+        self.created_at = datetime.today()
+        self.updated_at = datetime.today()
 
-        """
-        Initiliser for BaseModel class
-        """
+        t_format = "%Y-%m-%dT%H:%M:%S.%f"
         if kwargs:
-            for key, value in kwargs.items():
-                if key != '__class__':
-                    setattr(self, key, value)
-                    if key in ('created_at', 'updated_at'):
-                        datetime_format = "%Y-%m-%dT%H:%M:%S.%f"
-                        parsed_date = datetime.strptime(value, datetime_format)
-                        self.__dict__[key] = parsed_date
+            for k, v in kwargs.items():
+                if k == "created_at" or k == "updated_at":
+                    self.__dict__.update({k: datetime.strptime(v, t_format)})
+                elif k != "__class__":
+                    self.__dict__.update({k: v})
         else:
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.utcnow()
-            self.updated_at = self.created_at
-            storage.new(self)
+            models.storage.new(self)
 
     def __str__(self):
         """
-        string representation of the basemodel object
+        Return the str representation\
+        of the BaseModel instance
         """
-        return f"[BaseModel] ({self.id}) {self.__dict__}"
+        return (f'[{self.__class__.__name__}] ({self.id}) {self.__dict__}')
 
     def save(self):
         """
-        updates the the public instace attribute update_at with the current utc
+        Update updated_at with the current datetime
         """
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.today()
+        models.storage.save()
 
     def to_dict(self):
         """
-        returns a dictionary representation of the basemodel
-        object
+        Return the dictionary of the BaseModel instance
         """
-
-        my_dict = self.__dict__.copy()
-        my_dict["__class__"] = self.__class__.__name__
-        for key, value in my_dict.items():
-            if isinstance(value, datetime):
-                my_dict[key] = value.isoformat()
-        return my_dict
+        new_dic = self.__dict__.copy()
+        new_dic['__class__'] = self.__class__.__name__
+        new_dic.update({'created_at': self.created_at.isoformat()})
+        new_dic.update({'updated_at': self.updated_at.isoformat()})
+        return new_dic

@@ -1,48 +1,51 @@
 #!/usr/bin/python3
-
 """This module defines a class to manage file storage for hbnb clone"""
 import json
 
 
 class FileStorage:
-    """
-    A class of serializing and deserializing objects to and fro a json file
-    """
-    __file_path = "file.json"
+    """This class manages storage of hbnb models in JSON format"""
+    __file_path = 'file.json'
     __objects = {}
 
     def all(self):
-        """
-        Returns a dictionary of all stored objects
-        """
-        return all.objects
+        """Returns a dictionary of models currently in storage"""
+        return FileStorage.__objects
 
-        user_dict = {}
-        for key, obj in self_objects.items():
-            if isinstance(obj, User):
-                user_dict[key] = obj.__dict__
-
-        return {user_dict}
     def new(self, obj):
-        """
-        adds objects to the storage/sets in  objects
-        """
-        key = f"{obj.__class__.__name__}.{obj.id}"
-        self.__objects[key] = obj
+        """Adds new object to storage dictionary"""
+        self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
 
     def save(self):
-        """
-        serializes objects to the json file(path: _file_path)
-        """
-        with open(self.__file_path, "w") as f:
-            json.dump(self.__objects, f)
+        """Saves storage dictionary to file"""
+        with open(FileStorage.__file_path, 'w') as f:
+            temp = {}
+            temp.update(FileStorage.__objects)
+            for key, val in temp.items():
+                temp[key] = val.to_dict()
+            json.dump(temp, f)
 
     def reload(self):
-        """
-        deserializes  the json file into the objects dictionary(if it exists)
-        """
+        """Loads storage dictionary from file"""
+        from models.base_model import BaseModel
+        from models.user import User
+        from models.place import Place
+        from models.state import State
+        from models.city import City
+        from models.amenity import Amenity
+        from models.review import Review
+
+        classes = {
+                    'BaseModel': BaseModel, 'User': User, 'Place': Place,
+                    'State': State, 'City': City, 'Amenity': Amenity,
+                    'Review': Review
+                  }
         try:
-            with open(self.__file_path, "r")as f:
-                self.__objects = json.load(f)
+            temp = {}
+            with open(FileStorage.__file_path, 'r') as f:
+                temp = json.load(f)
+                for key, val in temp.items():
+                    self.all()[key] = classes[val['__class__']](**val)
+
         except FileNotFoundError:
             pass

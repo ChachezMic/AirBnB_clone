@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """class review module for the airbnb project"""
-from models.base_model.py import BaseModel
+from models.base_model import BaseModel
 
 
 class Review(BaseModel):
