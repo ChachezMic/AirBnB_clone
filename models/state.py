@@ -1,10 +1,8 @@
 #!/usr/bin/python3
-"""module class for state"""
+""" State Module """
 from models.base_model import BaseModel
 
 
 class State(BaseModel):
-    """
-    state class
-    """
+    """ State class """
     name = ""

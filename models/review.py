@@ -1,12 +1,10 @@
 #!/usr/bin/python3
-"""class review module for the airbnb project"""
+""" Review module """
 from models.base_model import BaseModel
 
 
 class Review(BaseModel):
-    """
-    contains state.id, user.id and a text string
-    """
+    """ Review classto store review information """
     place_id = ""
     user_id = ""
     text = ""
